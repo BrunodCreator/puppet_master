@@ -1,6 +1,5 @@
 import customtkinter as ctk
 import tkinter as tk
-from tkinter import filedialog
 import os
 import subprocess
 from PIL import Image, ImageTk
@@ -9,15 +8,24 @@ import win32api, win32gui, win32ui, win32con
 # Criar janela principal
 janela = ctk.CTk()
 janela.geometry('1000x600')
+# set_appearance_mode("dark")
 janela.title("ＰＵＰＰＥＴ_ＭＡＳＴＥＲ")
 janela.iconbitmap("puppet_master.ico")
 
 # Criar um frame rolável para exibir os executáveis
 frame_lista = ctk.CTkScrollableFrame(janela, fg_color="gray20", width=580, height=300)
-frame_lista.pack(pady=0, padx=0, fill="both", expand=True)
+frame_lista.pack(pady=1, padx=0, fill="both", expand=True)
 
+checkboxes = {}
 executaveis = []
-pasta_selecionada = ''
+
+# Definir caminho correto para a pasta robos dentro de interface/
+pasta_robos = os.path.abspath(os.path.join(os.path.dirname(__file__), "robos"))
+
+# Criar a pasta se ela não existir
+if not os.path.exists(pasta_robos):
+    os.makedirs(pasta_robos)
+
 robo_selecionado = tk.StringVar(value='')  # Nome do robô selecionado
 icones_carregados = {}  # Dicionário para armazenar os ícones carregados e evitar coleta de lixo
 
@@ -65,14 +73,8 @@ def extrair_icone(caminho_exe):
 
 # Função para buscar arquivos .exe na pasta selecionada
 def buscar_na_pasta():
-    global pasta_selecionada
-    pasta = filedialog.askdirectory(title="Buscar na pasta") 
-    if not pasta:
-        return  # Se o usuário cancelar, não faz nada
-    
-    pasta_selecionada = pasta
     global executaveis
-    executaveis = [f for f in os.listdir(pasta) if f.endswith('.exe')]
+    executaveis = [f for f in os.listdir(pasta_robos) if f.endswith('.exe')]
     
     # Atualizar a lista exibida
     atualizar_lista()
@@ -84,9 +86,11 @@ def atualizar_lista():
 
     global icones_carregados
     icones_carregados = {}  # Resetar dicionário de ícones para evitar coleta de lixo
-        
+    global checkboxes
+    checkboxes = {}
+    
     for exe in executaveis:
-        caminho_exe = os.path.join(pasta_selecionada, exe)
+        caminho_exe = os.path.join(pasta_robos, exe)
         
         # Criar um frame para cada robô
         frame_robo = ctk.CTkFrame(frame_lista)
@@ -113,38 +117,64 @@ def atualizar_lista():
         label_nome = ctk.CTkLabel(frame_robo, text=exe, font=("Arial", 14))
         label_nome.pack(side="left", padx=10, pady=5)
 
-        # Botão para selecionar o robô
-        btn_selecionar = ctk.CTkButton(
-            frame_robo, text="Selecionar", width=80, 
-            command=lambda nome=exe: selecionar_robo(nome)
+        # Criar um checkbox para selecionar o robô
+        checkboxes[exe] = ctk.BooleanVar(value=False) #Criar variável para armazenar estado
+        checkbox = ctk.CTkCheckBox(
+            frame_robo, text='', variable=checkboxes[exe],
+            command=lambda nome=exe: selecionar_robo(nome) #chama função ao clicar
         )
-        btn_selecionar.pack(side="right", padx=10, pady=5)
+
+        checkbox.pack(side="right", padx=0, pady=0)
+
 
 # Função para definir o robô selecionado e ativar o botão "Executar"
 def selecionar_robo(nome):
-    robo_selecionado.set(nome)  # Atualiza a variável com o nome do robô
-    btn_executar.configure(state="normal")  # Habilita o botão "Executar"
+    """Altera a seleção do robô baseado no estado do checkbox,Permite apenas um robô selecionado por vez."""
+    for robo, var in checkboxes.items():
+        if robo == nome:
+            var.set(True) #Mantém marcado o checkbox do robô clicado
+            robo_selecionado.set(nome) #Atualiza a variável com o robô selecionado
+            btn_executar.configure(state="normal") 
+            btn_finalizar.configure(state="normal")
+            btn_agendar_execucao.configure(state="normal")
+            btn_relatorio_execucao.configure(state="normal")
+        else:
+            var.set(False)  # Desmarca todos os outros checkboxes
 
+    
 # Função para executar o robô selecionado
 def executar_robo():
     if robo_selecionado.get():
-        caminho_exe = os.path.join(pasta_selecionada, robo_selecionado.get())
+        caminho_exe = os.path.join(pasta_robos, robo_selecionado.get())
         try:
             subprocess.Popen(caminho_exe, shell=True)  # Executa o arquivo
         except Exception as e:
             print(f"Erro ao executar {caminho_exe}: {e}")
-
+            
 # Criar frame inferior para os botões
-frame_botoes = ctk.CTkFrame(janela, fg_color="gray30")
-frame_botoes.pack(fill="x", pady=10, padx=10)
+frame_botoes = ctk.CTkFrame(janela, fg_color="gray20")
+frame_botoes.pack(fill="x", pady=0, padx=0)  # Mais espaçamento nas bordas
 
-# Botão para selecionar a pasta
-btn_carregar = ctk.CTkButton(frame_botoes, text="Selecionar Pasta", command=buscar_na_pasta)
-btn_carregar.pack(side="left", padx=5, pady=5)
+# Configurar a grade com 4 colunas
+frame_botoes.columnconfigure((0, 1, 2, 3), weight=1, uniform="botoes")  # Distribui o espaço igualmente
 
-# Botão para executar o robô (inicialmente desativado)
+# Criar os botões e posicioná-los na grade
+btn_relatorio_execucao = ctk.CTkButton(frame_botoes, text="Consultar Execução", state="disabled")
+btn_relatorio_execucao.grid(row=0, column=0, padx=10, pady=5, sticky="ew")  # "ew" expande horizontalmente
+
+btn_agendar_execucao = ctk.CTkButton(frame_botoes, text="Agendar Execução", state="disabled")
+btn_agendar_execucao.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
+
+btn_finalizar = ctk.CTkButton(frame_botoes, text="Finalizar", state="disabled")
+btn_finalizar.grid(row=0, column=2, padx=10, pady=5, sticky="ew")
+
 btn_executar = ctk.CTkButton(frame_botoes, text="Executar", command=executar_robo, state="disabled")
-btn_executar.pack(side="right", padx=5, pady=5)
+btn_executar.grid(row=0, column=3, padx=10, pady=5, sticky="ew")
+
+
+
+# Buscar os robôs automaticamente ao iniciar o programa
+buscar_na_pasta()
 
 # Rodar a aplicação
 janela.mainloop()
