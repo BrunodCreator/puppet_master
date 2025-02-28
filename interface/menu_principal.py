@@ -4,6 +4,8 @@ import os
 import subprocess
 from PIL import Image, ImageTk
 import win32api, win32gui, win32ui, win32con
+from executar_robo import executar_robo
+from finalizar_robo import finalizar_robo
 
 # Criar janela principal
 janela = ctk.CTk()
@@ -18,6 +20,15 @@ frame_lista.pack(pady=1, padx=0, fill="both", expand=True)
 
 checkboxes = {}
 executaveis = []
+# Criar um dicionário global para armazenar os processos
+processos_ativos = {}
+
+# Função intermediária para executar o robô e atualizar processos_ativos
+def iniciar_robo():
+    global processos_ativos  # Permite modificar a variável global
+    novos_processos = executar_robo(robo_selecionado, pasta_robos)  # Obtém o dicionário retornado
+    processos_ativos.update(novos_processos)  # Atualiza os processos ativos
+
 
 # Definir caminho correto para a pasta robos dentro de interface/
 pasta_robos = os.path.abspath(os.path.join(os.path.dirname(__file__), "robos"))
@@ -142,15 +153,7 @@ def selecionar_robo(nome):
             var.set(False)  # Desmarca todos os outros checkboxes
 
     
-# Função para executar o robô selecionado
-def executar_robo():
-    if robo_selecionado.get():
-        caminho_exe = os.path.join(pasta_robos, robo_selecionado.get())
-        try:
-            subprocess.Popen(caminho_exe, shell=True)  # Executa o arquivo
-        except Exception as e:
-            print(f"Erro ao executar {caminho_exe}: {e}")
-            
+
 # Criar frame inferior para os botões
 frame_botoes = ctk.CTkFrame(janela, fg_color="gray20")
 frame_botoes.pack(fill="x", pady=0, padx=0)  # Mais espaçamento nas bordas
@@ -165,11 +168,12 @@ btn_relatorio_execucao.grid(row=0, column=0, padx=10, pady=5, sticky="ew")  # "e
 btn_agendar_execucao = ctk.CTkButton(frame_botoes, text="Agendar Execução", state="disabled")
 btn_agendar_execucao.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
 
-btn_finalizar = ctk.CTkButton(frame_botoes, text="Finalizar", state="disabled")
+btn_executar = ctk.CTkButton(frame_botoes, text="Executar",command=lambda: iniciar_robo(), state="disabled")
+btn_executar.grid(row=0, column=3, padx=10, pady=5, sticky="ew")
+
+btn_finalizar = ctk.CTkButton(frame_botoes, text="Finalizar",command=lambda: finalizar_robo(robo_selecionado, processos_ativos),  state="disabled")
 btn_finalizar.grid(row=0, column=2, padx=10, pady=5, sticky="ew")
 
-btn_executar = ctk.CTkButton(frame_botoes, text="Executar", command=executar_robo, state="disabled")
-btn_executar.grid(row=0, column=3, padx=10, pady=5, sticky="ew")
 
 
 
