@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 import win32api, win32gui, win32ui, win32con
 from executar_robo import executar_robo
 from finalizar_robo import finalizar_robo
+from calendario.tela_principal import abrir_janela_agendamento
 
 # Criar janela principal
 janela = ctk.CTk()
@@ -77,7 +78,7 @@ def extrair_icone(caminho_exe):
         win32gui.ReleaseDC(0, hdc_screen)
         win32gui.DeleteObject(bmp.GetHandle())
 
-        return icon_image.resize((32, 32))  # Redimensiona o ícone para um tamanho adequado
+        return icon_image.resize((64, 64))  # Redimensiona o ícone para um tamanho adequado
     except Exception as e:
         print(f"Erro ao extrair ícone: {e}")
         return None  # Retorna None caso falhe
@@ -117,7 +118,7 @@ def atualizar_lista():
 
         # Exibir o ícone real ou um ícone genérico
         if icone_img:
-            icone_label = tk.Label(frame_robo, image=icone_img)
+            icone_label = tk.Label(frame_robo, image=icone_img, width=64, height=64) # Define o tamanho da label
             icone_label.image = icone_img  # Mantém referência
             icone_label.pack(side="left", padx=6, pady=3)
         else:
@@ -165,7 +166,7 @@ frame_botoes.columnconfigure((0, 1, 2, 3), weight=1, uniform="botoes")  # Distri
 btn_relatorio_execucao = ctk.CTkButton(frame_botoes, text="Consultar Execução", state="disabled")
 btn_relatorio_execucao.grid(row=0, column=0, padx=10, pady=5, sticky="ew")  # "ew" expande horizontalmente
 
-btn_agendar_execucao = ctk.CTkButton(frame_botoes, text="Agendar Execução", state="disabled")
+btn_agendar_execucao = ctk.CTkButton(frame_botoes, text="Agendar Execução",command=lambda: abrir_janela_agendamento(robo_selecionado.get()) , state="disabled")
 btn_agendar_execucao.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
 
 btn_executar = ctk.CTkButton(frame_botoes, text="Executar",command=lambda: iniciar_robo(), state="disabled")
