@@ -1,0 +1,67 @@
+from flask import Flask, request, jsonify
+import requests
+
+# Configurações 
+url_evolution_api = 'http://127.0.0.1:8081'
+instance_id = 'robozao_do_zap'
+api_key = '429683C4C977415CAAFCCE10F7D57E11'
+
+app = Flask(__name__)
+
+@app.route('/webhook', methods=['POST'])
+def receber_webhook():
+    """ Recebe eventos da Evolution API """
+    try:
+        data = request.get_json()
+        if not data:
+            print("❌ Erro: JSON ausente")
+            return jsonify({'status':'erro', 'message':'JSON ausente'}), 400
+        
+        print(f"📩 Webhook recebido: {data}")
+
+        event = data.get('event')  # Tipo de evento (ex: 'messages.upsert')
+
+        if event == "messages.upsert":
+            mensagem = data.get('data', {})
+            remetente = mensagem.get('key', {}).get('remoteJid', '')
+
+            # Se a mensagem for um texto
+            if 'message' in mensagem and 'conversation' in mensagem['message']:
+                texto = mensagem['message']['conversation']
+                print(f"📨 Mensagem recebida: {texto} de {remetente}")
+
+                # Responder a mensagem recebida
+                resposta_texto = "1- Executar Mineirinho"
+                
+                enviar_resposta(remetente, resposta_texto)
+
+        return jsonify({"status": "success"}), 200
+
+    except Exception as e:
+        print(f"❌ Erro no Webhook: {e}")
+        return jsonify({"status": "erro", "message": str(e)}), 500
+
+def enviar_resposta(numero, mensagem):
+    """ Envia mensagem via Evolution API """
+    url_envio = f"{url_evolution_api}/message/sendText/{instance_id}"
+    payload = {
+        "number": numero,
+        "text": mensagem,
+        "delay": 2,
+        "linkPreview": False
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "apikey": api_key
+    }
+
+    try:
+        response = requests.post(url_envio, json=payload, headers=headers)
+        print(f"📤 Resposta enviada para {numero}: {mensagem}")
+        print(f"🔍 Resposta Evolution API: {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"❌ Erro ao enviar resposta: {e}")
+
+# Para rodar o servidor Flask 
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5050, debug=True)
