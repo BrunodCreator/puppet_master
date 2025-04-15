@@ -1,5 +1,5 @@
-from interface.menu_principal import menu_principal
+from interface.menu_principal import MenuPrincipal  # Corrigido para importar a classe correta
 
-
-if __name__ == '__main__':
-    menu_principal()
+if __name__ == "__main__":
+    menu = MenuPrincipal()
+    menu.run()
