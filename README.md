@@ -2,7 +2,7 @@
 
 ## 📌 Visão Geral
 
-Puppet Master é um sistema de automação e gerenciamento de robôs que permite executar, agendar e monitorar processos automatizados. O sistema conta com uma interface gráfica intuitiva para facilitar a gestão dos robôs e oferece integração com a Evolution API, permitindo interação e controle via WhatsApp.
+Puppet Master é um sistema de orquestração de automações e gerenciamento de exe que permite executar, agendar e monitorar processos automatizados. O sistema conta com uma interface gráfica intuitiva para facilitar a gestão dos robôs e irá oferecer integração com a Evolution API, permitindo interação e controle via WhatsApp.
 
 # 🔥 Principais Funcionalidades
 
@@ -46,7 +46,7 @@ Python 3 🐍 (Linguagem principal)
 
 CustomTkinter 🎨 (Interface gráfica moderna e responsiva)
 
-SQLite 🗄️ (Banco de dados local para armazenamento de agendamentos e logs)
+SQL Server (Para salvar dados de pertinentes a execução do sistema)
 
 TkCalendar 📆 (Seleção de datas para agendamentos)
 
@@ -83,7 +83,7 @@ Após a integração com a Evolution API, os seguintes comandos podem ser enviad
 
 # 📌 Próximos Passos
 
-🗂️ Criar banco SQLite para salvar dados de agendamento e execução
+🗂️ Criar banco SQL Server para salvar dados de agendamento e execução
 
 🕒 Criar lógica da tela 'Agendar Execução'
 
