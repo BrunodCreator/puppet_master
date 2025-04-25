@@ -7,14 +7,14 @@ import win32api, win32gui, win32ui, win32con
 from functools import partial
 from funcoes.executar_robo import executar_robo
 from funcoes.finalizar_robo import finalizar_robo
-from interface.calendario.tela_agendamento import abrir_janela_agendamento
+from interface.calendario.tela_agendamento import TelaAgendamento, abrir_janela_agendamento
 
 class MenuPrincipal:
     def __init__(self):
         # Criar janela principal
         self.janela = ctk.CTk()
         self.janela.geometry('1000x600')
-        self.janela.title("ＰＵＰＰＥＴ   ＭＡＳＴＥＲ")
+        self.janela.title("\uff30\uff35\uff30\uff30\uff25\uff34   \uff2d\uff21\uff33\uff34\uff25\uff32")
         self.janela.iconbitmap("puppet_master.ico")
 
         # Diretórios e variáveis
@@ -25,9 +25,16 @@ class MenuPrincipal:
         if not os.path.exists(self.pasta_robos):
             print('A pasta de robôs não foi encontrada')
 
-        # Criar um frame rolável para exibir os executáveis
-        self.frame_lista = ctk.CTkScrollableFrame(self.janela, fg_color="gray20", width=580, height=300)
+        # Criar o frame principal que conterá todas as telas
+        self.frame_principal = ctk.CTkFrame(self.janela, fg_color="gray20")
+        self.frame_principal.pack(fill="both", expand=True)
+
+        # Criar um frame rolável para exibir os executáveis (inicialmente visível)
+        self.frame_lista = ctk.CTkScrollableFrame(self.frame_principal, fg_color="gray20", width=580, height=300)
         self.frame_lista.pack(pady=1, padx=0, fill="both", expand=True)
+
+        # Frame para a tela de agendamento (inicialmente não visível)
+        self.frame_agendamento = None
 
         self.checkboxes = {}
         self.executaveis = []
@@ -42,27 +49,63 @@ class MenuPrincipal:
 
     def criar_botoes(self):
         """Cria os botões no rodapé da interface."""
-        frame_botoes = ctk.CTkFrame(self.janela, fg_color="gray20")
-        frame_botoes.pack(fill="x", pady=0, padx=0)
+        self.frame_botoes = ctk.CTkFrame(self.janela, fg_color="gray20")
+        self.frame_botoes.pack(fill="x", pady=0, padx=0)
 
-        frame_botoes.columnconfigure((0, 1, 2, 3), weight=1, uniform='botoes')
+        self.frame_botoes.columnconfigure((0, 1, 2, 3), weight=1, uniform='botoes')
 
-        self.btn_relatorio_execucao = ctk.CTkButton(frame_botoes, text='Consultar Execução', state='disabled')
+        self.btn_relatorio_execucao = ctk.CTkButton(self.frame_botoes, text='Consultar Execução', state='disabled')
         self.btn_relatorio_execucao.grid(row=0, column=0, padx=10, pady=5, sticky='ew')
 
-        self.btn_agendar_execucao = ctk.CTkButton(frame_botoes, text='Agendar Execução',
-                                                 command=lambda: abrir_janela_agendamento(self.robo_selecionado.get()),
+        self.btn_agendar_execucao = ctk.CTkButton(self.frame_botoes, text='Agendar Execução',
+                                                 command=self.mostrar_tela_agendamento,
                                                  state='disabled')
-        self.btn_agendar_execucao.grid(row=0, column=0, padx=10, pady=5, sticky="ew")
+        self.btn_agendar_execucao.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
 
-        self.btn_executar = ctk.CTkButton(frame_botoes, text='Executar',
+        self.btn_executar = ctk.CTkButton(self.frame_botoes, text='Executar',
                                           command=self.iniciar_robo, state='disabled')
         self.btn_executar.grid(row=0, column=3, padx=10, pady=5, sticky='ew')
 
-        self.btn_finalizar = ctk.CTkButton(frame_botoes, text='Finalizar',
+        self.btn_finalizar = ctk.CTkButton(self.frame_botoes, text='Finalizar',
                                            command=lambda: finalizar_robo(self.robo_selecionado, self.processos_ativos),
                                            state='disabled')
         self.btn_finalizar.grid(row=0, column=2, padx=10, pady=5, sticky='ew')
+
+    def mostrar_tela_agendamento(self):
+        """Mostra a tela de agendamento no frame principal"""
+        # Esconder a lista de robôs
+        self.frame_lista.pack_forget()
+        
+        # Criar e mostrar o frame de agendamento
+        self.frame_agendamento = TelaAgendamento(
+            self.frame_principal, 
+            self.robo_selecionado.get(), 
+            self.voltar_para_lista
+        )
+        self.frame_agendamento.pack(fill="both", expand=True)
+        
+        # Desabilitar os botões enquanto estiver na tela de agendamento
+        self.atualizar_estado_botoes('disabled')
+
+    def voltar_para_lista(self):
+        """Volta para a lista de robôs"""
+        # Remover o frame de agendamento
+        if self.frame_agendamento:
+            self.frame_agendamento.pack_forget()
+            self.frame_agendamento = None
+        
+        # Mostrar a lista de robôs novamente
+        self.frame_lista.pack(pady=1, padx=0, fill="both", expand=True)
+        
+        # Reabilitar os botões
+        self.atualizar_estado_botoes('normal')
+
+    def atualizar_estado_botoes(self, estado):
+        """Atualiza o estado dos botões"""
+        self.btn_executar.configure(state=estado)
+        self.btn_finalizar.configure(state=estado)
+        self.btn_agendar_execucao.configure(state=estado)
+        self.btn_relatorio_execucao.configure(state=estado)
 
     def iniciar_robo(self):
         """Inicia o robô selecionado."""
@@ -122,10 +165,7 @@ class MenuPrincipal:
         self.checkboxes[nome].set(True)
         self.robo_selecionado.set(nome)
 
-        self.btn_executar.configure(state='normal')
-        self.btn_finalizar.configure(state='normal')
-        self.btn_agendar_execucao.configure(state='normal')
-        self.btn_relatorio_execucao.configure(state='normal')
+        self.atualizar_estado_botoes('normal')
 
     def extrair_icone(self, caminho_exe):
         """Extrai o ícone do executável."""
