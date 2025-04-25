@@ -7,15 +7,22 @@ import win32api, win32gui, win32ui, win32con
 from functools import partial
 from funcoes.executar_robo import executar_robo
 from funcoes.finalizar_robo import finalizar_robo
-from interface.calendario.tela_agendamento import abrir_janela_agendamento
+from interface.calendario.tela_agendamento import TelaAgendamento
+from interface.tela_base import TelaBase
 
-class MenuPrincipal:
-    def __init__(self):
-        # Criar janela principal
-        self.janela = ctk.CTk()
-        self.janela.geometry('1000x600')
-        self.janela.title("ＰＵＰＰＥＴ   ＭＡＳＴＥＲ")
-        self.janela.iconbitmap("puppet_master.ico")
+class MenuPrincipal(TelaBase):
+    def __init__(self, janela_pai=None):
+        # Inicializar a classe base
+        super().__init__()
+        
+        if janela_pai:
+            # Se uma janela pai for fornecida, destrua a janela criada pela classe base
+            # e use a janela pai
+            self.janela.destroy()
+            self.janela = janela_pai
+        
+        # Alterar o título para indicar que estamos no menu principal
+        self.alterar_titulo("Menu Principal")
 
         # Diretórios e variáveis
         self.pasta_base = os.path.dirname(os.path.abspath(__file__))
@@ -51,9 +58,9 @@ class MenuPrincipal:
         self.btn_relatorio_execucao.grid(row=0, column=0, padx=10, pady=5, sticky='ew')
 
         self.btn_agendar_execucao = ctk.CTkButton(frame_botoes, text='Agendar Execução',
-                                                 command=lambda: abrir_janela_agendamento(self.robo_selecionado.get()),
+                                                 command=self.abrir_tela_agendamento,
                                                  state='disabled')
-        self.btn_agendar_execucao.grid(row=0, column=0, padx=10, pady=5, sticky="ew")
+        self.btn_agendar_execucao.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
 
         self.btn_executar = ctk.CTkButton(frame_botoes, text='Executar',
                                           command=self.iniciar_robo, state='disabled')
@@ -64,6 +71,15 @@ class MenuPrincipal:
                                            state='disabled')
         self.btn_finalizar.grid(row=0, column=2, padx=10, pady=5, sticky='ew')
 
+    def abrir_tela_agendamento(self):
+        """Abre a tela de agendamento na mesma janela"""
+        # Limpar a janela atual
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+            
+        # Criar e exibir a tela de agendamento na mesma janela
+        tela_agendamento = TelaAgendamento(self.janela, self.robo_selecionado.get(), self)
+        
     def iniciar_robo(self):
         """Inicia o robô selecionado."""
         novos_processos = executar_robo(self.robo_selecionado.get(), self.pasta_robos)
@@ -163,4 +179,13 @@ class MenuPrincipal:
 
     def run(self):
         """Inicia a interface gráfica."""
-        self.janela.mainloop()
+        self.exibir()
+        
+    def voltar_ao_menu(self):
+        """Método para voltar ao menu principal"""
+        # Limpar a janela atual
+        for widget in self.janela.winfo_children():
+            widget.destroy()
+            
+        # Reinicializar o menu principal
+        self.__init__(self.janela)
