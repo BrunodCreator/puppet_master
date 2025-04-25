@@ -7,14 +7,14 @@ import win32api, win32gui, win32ui, win32con
 from functools import partial
 from funcoes.executar_robo import executar_robo
 from funcoes.finalizar_robo import finalizar_robo
-from interface.calendario.tela_agendamento import abrir_janela_agendamento
+from interface.calendario.tela_agendamento import TelaAgendamento
 
 class MenuPrincipal:
     def __init__(self):
         # Criar janela principal
         self.janela = ctk.CTk()
         self.janela.geometry('1000x600')
-        self.janela.title("ＰＵＰＰＥＴ   ＭＡＳＴＥＲ")
+        self.janela.title("\uff30\uff35\uff30\uff30\uff25\uff34   \uff2d\uff21\uff33\uff34\uff25\uff32")
         self.janela.iconbitmap("puppet_master.ico")
 
         # Diretórios e variáveis
@@ -51,7 +51,7 @@ class MenuPrincipal:
         self.btn_relatorio_execucao.grid(row=0, column=0, padx=10, pady=5, sticky='ew')
 
         self.btn_agendar_execucao = ctk.CTkButton(frame_botoes, text='Agendar Execução',
-                                                 command=lambda: abrir_janela_agendamento(self.robo_selecionado.get()),
+                                                 command=self.abrir_agendamento,
                                                  state='disabled')
         self.btn_agendar_execucao.grid(row=0, column=0, padx=10, pady=5, sticky="ew")
 
@@ -63,6 +63,11 @@ class MenuPrincipal:
                                            command=lambda: finalizar_robo(self.robo_selecionado, self.processos_ativos),
                                            state='disabled')
         self.btn_finalizar.grid(row=0, column=2, padx=10, pady=5, sticky='ew')
+
+    def abrir_agendamento(self):
+        """Abre a tela de agendamento para o robô selecionado"""
+        tela_agendamento = TelaAgendamento(self.robo_selecionado.get())
+        tela_agendamento.exibir()
 
     def iniciar_robo(self):
         """Inicia o robô selecionado."""
@@ -161,5 +166,3 @@ class MenuPrincipal:
     def run(self):
         """Inicia a interface gráfica."""
         self.janela.mainloop()
-
-
