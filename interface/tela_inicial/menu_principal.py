@@ -22,7 +22,7 @@ class MenuPrincipal(TelaBase):
             self.janela = janela_pai
         
         # Alterar o título para indicar que estamos no menu principal
-        self.alterar_titulo("Menu Principal")
+        self.alterar_titulo("ＭＥＮＵ   ＰＲＩＮＣＩＰＡＬ")
 
         # Diretórios e variáveis
         self.pasta_base = os.path.dirname(os.path.abspath(__file__))
@@ -182,7 +182,7 @@ class MenuPrincipal(TelaBase):
         self.exibir()
         
     def voltar_ao_menu(self):
-        """Método para voltar ao menu principal"""
+        """Métodos para voltar ao menu principal"""
         # Limpar a janela atual
         for widget in self.janela.winfo_children():
             widget.destroy()

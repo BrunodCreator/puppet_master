@@ -1,5 +1,5 @@
-from interface.tela_inicial.menu_principal import MenuPrincipal
+from interface.login.tela_de_login import TelaLogin
 
 if __name__ == "__main__":
-    menu = MenuPrincipal()
-    menu.run()
+    login = TelaLogin()
+    login.exibir()

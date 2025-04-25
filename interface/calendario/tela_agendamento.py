@@ -25,7 +25,7 @@ class TelaAgendamento(TelaBase):
         self.robo_nome = robo_nome
         
         # Alterar o título para indicar que estamos na tela de agendamento
-        self.alterar_titulo("Agendamento")
+        self.alterar_titulo("ＡＧＥＮＤＡＭＥＮＴＯ")
         
         # Definir cores e estilos
         self.cor_primaria = "#3a7ebf"
@@ -58,7 +58,7 @@ class TelaAgendamento(TelaBase):
         
         # Criar frame para mensagens de erro/sucesso (inicialmente oculto)
         self.frame_mensagem = ctk.CTkFrame(self.frame_principal)
-        self.frame_mensagem.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+        self.frame_mensagem.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
         self.frame_mensagem.grid_remove()  # Inicialmente oculto
         
         # Configurar o frame de agendamento

@@ -1,5 +1,6 @@
 from interface.tela_base import TelaBase
 import customtkinter as ctk
+from interface.tela_inicial.menu_principal import MenuPrincipal
 
 
 class TelaLogin(TelaBase):
@@ -35,11 +36,19 @@ class TelaLogin(TelaBase):
         self.letreiro.place(relx=0.8, rely=1, anchor='s')
 
         self.mover_texto()
+        self.exibir()
 
     def realizar_login(self):
         usuario = self.entry_usuario.get()
         senha = self.entry_senha.get()
-        print(f"Usuário: {usuario}, Senha: {senha}")
+        if usuario == 'admin' and senha == 'admin':
+            for widget in self.janela.winfo_children():
+                widget.destroy()
+            menu_principal = MenuPrincipal(self.janela)
+        else:
+            self.label_login_invalido = ctk.CTkLabel(self.janela, text='Usuário ou senha inválidas, tente novamente...', font=("Arial", 14), text_color=self.cor_erro)
+            self.label_login_invalido.place(relx=0.5, rely=0.3, anchor="center")
+
 
 
     def mover_texto(self):
@@ -56,6 +65,5 @@ class TelaLogin(TelaBase):
         self.janela.after(100, self.mover_texto)
 
 
-if __name__ == '__main__':
-    login = TelaLogin()
-    login.exibir()
+
+

@@ -4,6 +4,7 @@ import os
 class TelaBase:
     def __init__(self):
         self.janela = ctk.CTk()
+        self.cor_erro = "#e74c3c"
         #Caminho do diretório onde o script atual está localizado
         self.pasta_interface = os.path.dirname(os.path.abspath(__file__))
         #Construir o caminho absoluto para o ícone
@@ -12,10 +13,10 @@ class TelaBase:
         self.janela.title("ＰＵＰＰＥＴ   ＭＡＳＴＥＲ")
         self.janela.iconbitmap(icone_path)
 
+
     def alterar_titulo(self, nome_da_janela):
         """Métodos para alterar o título da janela dinamincamente"""
         self.janela.title(f'ＰＵＰＰＥＴ   ＭＡＳＴＥＲ   -->   {nome_da_janela}')
-
 
 
     def exibir(self):
@@ -23,7 +24,5 @@ class TelaBase:
         self.janela.mainloop()
 
 
-if __name__ == '__main__':
-    app = TelaBase()
-    app.exibir()
+
 
