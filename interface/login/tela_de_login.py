@@ -32,7 +32,7 @@ class TelaLogin(TelaBase):
 
         # Adicionando letreiro no rodapé
         self.letreiro = ctk.CTkLabel(self.janela, text='Bem-vindo ao Puppet Master! Este projeto está sendo desenvolvido por Emerson Bruno, e agora tenho um letreiro de caminhão', font=("Arial", 14))
-        self.letreiro.place(relx=0.8, rely=1, anchor='se')
+        self.letreiro.place(relx=0.8, rely=1, anchor='s')
 
         self.mover_texto()
 
