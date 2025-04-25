@@ -91,12 +91,15 @@ class MenuPrincipal:
 
             # Extrair o ícone do executável
             icone_exe = self.extrair_icone(caminho_exe)
-            icone_img = icone_exe if icone_exe else None
-
+            
             # Adicionar o ícone ou texto (se o ícone não for encontrado)
-            if icone_img:
-                icone_label = tk.Label(frame_robo, image=icone_img, width=64, height=64)
-                icone_label.image = icone_img  # Manter referência para não ser coletado pelo lixo
+            if icone_exe:
+                # Converter a imagem PIL para um formato que o Tkinter possa usar
+                tk_image = ImageTk.PhotoImage(icone_exe)
+                # Armazenar a imagem no dicionário para evitar coleta de lixo
+                self.icones_carregados[exe] = tk_image
+                
+                icone_label = tk.Label(frame_robo, image=self.icones_carregados[exe], width=64, height=64)
                 icone_label.pack(side="left", padx=6, pady=3)
             else:
                 icone_label = ctk.CTkLabel(frame_robo, text='sem ícone', font=("Arial", 20))
@@ -161,5 +164,3 @@ class MenuPrincipal:
     def run(self):
         """Inicia a interface gráfica."""
         self.janela.mainloop()
-
-
