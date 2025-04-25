@@ -19,7 +19,7 @@ class MenuPrincipal:
 
         # Diretórios e variáveis
         self.pasta_base = os.path.dirname(os.path.abspath(__file__))
-        self.pasta_robos = os.path.abspath(os.path.join(self.pasta_base, '..', 'robos'))
+        self.pasta_robos = os.path.abspath(os.path.join(self.pasta_base, '..','..', 'robos'))
         self.robo_selecionado = tk.StringVar(value='')
 
         if not os.path.exists(self.pasta_robos):
