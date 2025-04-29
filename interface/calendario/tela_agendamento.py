@@ -48,7 +48,7 @@ class TelaAgendamento(TelaBase):
         self.janela.rowconfigure(2, weight=0)
         
         # Criar frame principal para conter todos os elementos
-        self.frame_principal = ctk.CTkFrame(self.janela)
+        self.frame_principal = ctk.CTkScrollableFrame(self.janela)
         self.frame_principal.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
         self.frame_principal.columnconfigure(0, weight=1)
         

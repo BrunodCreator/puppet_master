@@ -54,21 +54,21 @@ class MenuPrincipal(TelaBase):
 
         frame_botoes.columnconfigure((0, 1, 2, 3), weight=1, uniform='botoes')
 
-        self.btn_relatorio_execucao = ctk.CTkButton(frame_botoes, text='Consultar Execução', state='disabled')
+        self.btn_relatorio_execucao = ctk.CTkButton(frame_botoes, text='Consultar Execução', state='disabled', height=40)
         self.btn_relatorio_execucao.grid(row=0, column=0, padx=10, pady=5, sticky='ew')
 
         self.btn_agendar_execucao = ctk.CTkButton(frame_botoes, text='Agendar Execução',
                                                  command=self.abrir_tela_agendamento,
-                                                 state='disabled')
+                                                 state='disabled', height=40)
         self.btn_agendar_execucao.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
 
         self.btn_executar = ctk.CTkButton(frame_botoes, text='Executar',
-                                          command=self.iniciar_robo, state='disabled')
+                                          command=self.iniciar_robo, state='disabled', height=40)
         self.btn_executar.grid(row=0, column=3, padx=10, pady=5, sticky='ew')
 
         self.btn_finalizar = ctk.CTkButton(frame_botoes, text='Finalizar',
                                            command=lambda: finalizar_robo(self.robo_selecionado, self.processos_ativos),
-                                           state='disabled')
+                                           state='disabled', height=40)
         self.btn_finalizar.grid(row=0, column=2, padx=10, pady=5, sticky='ew')
 
     def abrir_tela_agendamento(self):

@@ -30,6 +30,7 @@ class TelaLogin(TelaBase):
         # Criar o botão de login
         self.botao_login = ctk.CTkButton(self.frame_login, text="Login", command=self.realizar_login)
         self.botao_login.grid(row=4, column=0, padx=10, pady=20, sticky="ew")
+        self.janela.bind("<Return>", lambda event: self.realizar_login())
 
         # Adicionando letreiro no rodapé
         self.letreiro = ctk.CTkLabel(self.janela, text='Bem-vindo ao Puppet Master! Este projeto está sendo desenvolvido por Emerson Bruno, e agora tenho um letreiro de caminhão', font=("Arial", 14))
@@ -37,6 +38,7 @@ class TelaLogin(TelaBase):
 
         self.mover_texto()
         self.exibir()
+
 
     def realizar_login(self):
         usuario = self.entry_usuario.get()
